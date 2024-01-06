@@ -1,11 +1,14 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
-import { TypeOrmModule } from '@nestjs/typeorm'
-import { UsersModule } from './users/users.module'
-import { User } from './users/entities/user.entity'
-import { AuthGuard } from './users/auth/auth.guard'
 import { APP_GUARD } from '@nestjs/core'
-import { UsersService } from './users/users.service'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { ProjectUserModule } from './project-users/project-users.module'
+import { Project } from './projects/entities/project.entity'
+import { ProjectsModule } from './projects/projects.module'
+import { AuthGuard } from './users/auth/auth.guard'
+import { User } from './users/entities/user.entity'
+import { UsersModule } from './users/users.module'
+import { ProjectUser } from './project-users/entities/project-user.entity'
 
 @Module({
   imports: [
@@ -19,12 +22,12 @@ import { UsersService } from './users/users.service'
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [User],
+        entities: [User,Project, ProjectUser],
         synchronize: true,
       }),
       inject: [ConfigService],
     }),
-    UsersModule
+    UsersModule, ProjectsModule, ProjectUserModule
   ],
   controllers: [],
   providers: [{
