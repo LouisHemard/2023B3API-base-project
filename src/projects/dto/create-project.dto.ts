@@ -1,5 +1,4 @@
-import { IsNotEmpty, IsEmail, Length, IsString, MinLength, IsEnum, IsOptional, IsUUID } from 'class-validator';
-import { Project } from '../entities/project.entity';
+import { IsNotEmpty, IsString, IsUUID, MinLength } from 'class-validator'
 
 export class CreateProjectDto {
 

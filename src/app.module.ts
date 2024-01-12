@@ -1,14 +1,16 @@
-import { Module } from '@nestjs/common'
+import { Module, ValidationPipe } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
-import { APP_GUARD } from '@nestjs/core'
+import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { ProjectUserModule } from './project-users/project-users.module'
+import { EventsModule } from './events/events.module'
+import { TransformInterceptor } from './interceptor/transform.interceptor'
+import { ProjectUser } from './projects-users/entities/project-user.entity'
+import { ProjectUsersModule } from './projects-users/projects-users.module'
 import { Project } from './projects/entities/project.entity'
 import { ProjectsModule } from './projects/projects.module'
 import { AuthGuard } from './users/auth/auth.guard'
 import { User } from './users/entities/user.entity'
 import { UsersModule } from './users/users.module'
-import { ProjectUser } from './project-users/entities/project-user.entity'
 
 @Module({
   imports: [
@@ -22,17 +24,28 @@ import { ProjectUser } from './project-users/entities/project-user.entity'
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [User,Project, ProjectUser],
+        entities: [User, Project, ProjectUser, Event],
         synchronize: true,
       }),
       inject: [ConfigService],
     }),
-    UsersModule, ProjectsModule, ProjectUserModule
+    UsersModule,
+    ProjectsModule,
+    ProjectUsersModule,
+    EventsModule,
   ],
   controllers: [],
   providers: [{
     provide: APP_GUARD,
     useClass: AuthGuard
+  }, {
+    provide: APP_INTERCEPTOR,
+    useClass: TransformInterceptor
+  },
+  {
+    provide: APP_PIPE,
+    useValue: new ValidationPipe({ transform: true })
   }],
 })
 export class AppModule { }
+
